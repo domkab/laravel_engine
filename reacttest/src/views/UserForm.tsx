@@ -1,24 +1,70 @@
 import { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { axiosClient } from './axios.client';
+import { UserFormState } from '../types/UserFormState';
+
+const initialUserState: UserFormState = {
+  id: null,
+  name: '',
+  email: '',
+  password: '',
+  password_confirmation: '',
+};
 
 export const UserForm: React.FC = () => {
-  const { id } = useParams();
-  const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState(null);
-  const [user, setUser] = useState({
-    id: null,
-    name: '',
-    email: '',
-    password: '',
-    password_confirmation: '',
-  })
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState<boolean>(false);
+  const [errors, setErrors] = useState<Record<string, string[]> | null>(null);
+  const [user, setUser] = useState<UserFormState>(initialUserState);
+
+  const validateInputs = (): boolean => {
+    const newErrors: Record<string, string[]> = {};
+    const requiredFields = ['name', 'email', 'password'];
+
+    requiredFields.forEach(field => {
+      if (!user[field as keyof UserFormState]) {
+        newErrors[field] = [`${field.charAt(0).toUpperCase() + field.slice(1)} is required.`];
+      }
+    });
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    setLoading(true);
     setErrors(null);
+
+    if (!validateInputs()) {
+      return;
+    }
+
+    if (user.id) {
+      axiosClient.put(`/users/${user.id}`, user)
+        .then(() => {
+          // TODO show notification
+          navigate('/users');
+          setLoading(false);
+        })
+        .catch((err) => {
+          const response = err.response;
+          if (response && response.status === 422) {
+            setErrors({ ...response.data.errors });
+          }
+        });
+    } else {
+      axiosClient.post('users', user)
+        .then(() => {
+          navigate('/users');
+        })
+        .catch(err => {
+          const response = err.response;
+          if (response && response.status === 422) {
+            setErrors(response.data.errors);
+          }
+        })
+    }
   }
 
   useEffect(() => {
@@ -26,8 +72,10 @@ export const UserForm: React.FC = () => {
       setLoading(true);
       axiosClient.get(`/users/${id}`)
         .then(({ data }) => {
-          setUser(data.data);
+          setUser(data);
+
           console.log(data);
+
           setLoading(false);
         })
         .catch((err) => {
