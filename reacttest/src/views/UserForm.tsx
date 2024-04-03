@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { axiosClient } from './axios.client';
-import { UserFormState } from '../types/UserFormState';
+import { ErrorMessages, UserFormState } from '../types/types';
+import { areInputFieldsEmpty } from '../utils/areInputFieldsEmpty';
+import { useStateContext } from '../contexts/useStateContext';
 
 const initialUserState: UserFormState = {
   id: null,
@@ -15,35 +17,44 @@ export const UserForm: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [loading, setLoading] = useState<boolean>(false);
-  const [errors, setErrors] = useState<Record<string, string[]> | null>(null);
+  const [errors, setErrors] = useState<ErrorMessages | null>(null);
   const [user, setUser] = useState<UserFormState>(initialUserState);
+  const [isModified, setIsModified] = useState<boolean>(false);
+  const { setNotification } = useStateContext();
 
-  const validateInputs = (): boolean => {
-    const newErrors: Record<string, string[]> = {};
-    const requiredFields = ['name', 'email', 'password'];
+  // const validateForEmptyFields = (): boolean => {
+  //   const requiredFields: Array<keyof UserFormState>
+  //     = ['name', 'email', 'password'];
+  //   const newErrors = areInputFieldsEmpty(user, requiredFields);
 
-    requiredFields.forEach(field => {
-      if (!user[field as keyof UserFormState]) {
-        newErrors[field] = [`${field.charAt(0).toUpperCase() + field.slice(1)} is required.`];
-      }
-    });
+  //   setErrors(newErrors);
+  //   return Object.keys(newErrors).length === 0;
+  // };
 
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+  const validateForEmptyFields = (): boolean => {
+    // Only validate fields if it's a new user or fields have been modified
+    if (!user.id || isModified) {
+      const requiredFields: Array<keyof UserFormState> = ['name', 'email', 'password'];
+      const newErrors = areInputFieldsEmpty(user, requiredFields);
+
+      setErrors(newErrors);
+      return Object.keys(newErrors).length === 0;
+    }
+    return true;
   };
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setErrors(null);
 
-    if (!validateInputs()) {
+    if (!validateForEmptyFields()) {
       return;
     }
 
     if (user.id) {
       axiosClient.put(`/users/${user.id}`, user)
         .then(() => {
-          // TODO show notification
+          setNotification("User was succesfully updated")
           navigate('/users');
           setLoading(false);
         })
@@ -56,6 +67,7 @@ export const UserForm: React.FC = () => {
     } else {
       axiosClient.post('users', user)
         .then(() => {
+          setNotification("User was succesfully created");
           navigate('/users');
         })
         .catch(err => {
@@ -65,7 +77,14 @@ export const UserForm: React.FC = () => {
           }
         })
     }
-  }
+  };
+
+  const handleInputChange = <T extends keyof UserFormState>(
+    field: T, value: UserFormState[T]
+  ) => {
+    setUser((prev) => ({ ...prev, [field]: value }));
+    setIsModified(true);
+  };
 
   useEffect(() => {
     if (id) {
@@ -110,23 +129,26 @@ export const UserForm: React.FC = () => {
           <form onSubmit={onSubmit}>
             <input
               value={user.name}
-              onChange={e => setUser({ ...user, name: e.target.value })}
+              onChange={e => handleInputChange('name', e.target.value)}
               placeholder="Name"
             />
 
             <input
               value={user.email}
-              onChange={e => setUser({ ...user, email: e.target.value })}
+              onChange={e => handleInputChange('email', e.target.value)}
+              type="email"
               placeholder="Email"
             />
 
             <input
-              onChange={e => setUser({ ...user, password: e.target.value })}
+              onChange={e => handleInputChange('password', e.target.value)}
+              type="password"
               placeholder="Password"
             />
 
             <input
-              onChange={e => setUser({ ...user, password_confirmation: e.target.value })}
+              onChange={e => handleInputChange('password_confirmation', e.target.value)}
+              type="password"
               placeholder="Password Confirmation"
             />
 

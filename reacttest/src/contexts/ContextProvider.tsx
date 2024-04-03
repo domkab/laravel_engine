@@ -1,17 +1,20 @@
 import { ReactNode, createContext, useState } from 'react';
-import { ContextType, UserType } from '../types';
+import { ContextType, UserType } from '../types/types';
 
 const defaultContextValue: ContextType = {
   user: null,
   token: null,
   setUser: () => {},
   setToken: () => {},
+  notification: '',
+  setNotification: () => {}
 };
 
 export const StateContext = createContext<ContextType>(defaultContextValue);
 
 export const ContextProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<UserType | null>(null);
+  const [notification, _setNotification] = useState<string>('');
   const [token, setToken] = useState<string | null>(localStorage.getItem('ACCESS_TOKEN'));
 
   // storing token in local storage
@@ -26,6 +29,13 @@ export const ContextProvider: React.FC<{ children: ReactNode }> = ({ children })
     } else {
       localStorage.removeItem('ACCESS_TOKEN');
     }
+  };
+
+  const setNotification = (message: string) => {
+    _setNotification(message);
+    setTimeout(() => {
+      _setNotification('');
+    }, 5000)
   }
 
   return (
@@ -34,6 +44,8 @@ export const ContextProvider: React.FC<{ children: ReactNode }> = ({ children })
       token,
       setUser,
       setToken: updateToken,
+      notification,
+      setNotification
     }}>
       {children}
     </StateContext.Provider>
