@@ -93,7 +93,7 @@ export const UserForm: React.FC = () => {
         .then(({ data }) => {
           setUser(data);
 
-          // console.log(data);
+          console.log(data);
 
           setLoading(false);
         })
