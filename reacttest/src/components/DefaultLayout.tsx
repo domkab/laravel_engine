@@ -5,7 +5,6 @@ import { axiosClient } from '../views/axios.client';
 // import { axiosClient } from '../views/axios.client';
 
 export const DefaultLayout: React.FC = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { user, token, setUser, setToken, notification } = useStateContext();
 
   useEffect(() => {
