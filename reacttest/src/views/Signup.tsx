@@ -2,7 +2,7 @@
 import { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useStateContext } from '../contexts/useStateContext';
-import { ErrorMessages } from '../types';
+import { ErrorMessages } from '../types/types';
 import { axiosClient } from './axios.client';
 
 export const Signup: React.FC = () => {

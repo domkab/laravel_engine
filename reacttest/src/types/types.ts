@@ -1,9 +1,10 @@
 export interface ContextType {
   user: UserType | null;
   token: string | null;
-  // eslint-disable-next-line @typescript-eslint/ban-types
   setUser: (user: UserType | null) => void;
   setToken: (token: string | null) => void;
+  notification: string;
+  setNotification: (message: string) => void;
 }
 
 export interface UserType {
@@ -13,4 +14,12 @@ export interface UserType {
 
 export interface ErrorMessages {
   [key: string]: string[];
+}
+
+export interface UserFormState {
+  id: string | null;
+  name: string;
+  email: string;
+  password: string;
+  password_confirmation: string;
 }

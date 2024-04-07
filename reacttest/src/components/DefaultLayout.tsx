@@ -5,8 +5,7 @@ import { axiosClient } from '../views/axios.client';
 // import { axiosClient } from '../views/axios.client';
 
 export const DefaultLayout: React.FC = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { user, token, setUser, setToken } = useStateContext();
+  const { user, token, setUser, setToken, notification } = useStateContext();
 
   useEffect(() => {
     axiosClient.get('/user')
@@ -37,6 +36,11 @@ export const DefaultLayout: React.FC = () => {
         <Link to="/dashboard">Dashboard</Link>
         <Link to="/users">Users</Link>
       </aside>
+      {notification &&
+        <div className="notification">
+          {notification}
+        </div>
+      }
       <div className="content">
         <header>
           <div>
