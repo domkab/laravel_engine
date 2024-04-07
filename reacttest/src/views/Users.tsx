@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { axiosClient } from './axios.client';
 import { Link } from 'react-router-dom';
+import { useStateContext } from '../contexts/useStateContext';
 
 interface User {
   id: number;
@@ -18,6 +19,7 @@ interface PaginationInfo {
 
 export const Users: React.FC = () => {
   const [users, setUsers] = useState<User[] | null>();
+  const { setNotification } = useStateContext();
   const [pagination, setPagination] = useState<PaginationInfo>({
     currentPage: 1,
     lastPage: 1,
@@ -51,7 +53,7 @@ export const Users: React.FC = () => {
 
     axiosClient.delete(`/users/${user.id}`)
       .then(() => {
-        // TODO show notification
+        setNotification("User was succesfully deleted");
         getUsers();
       })
   }
