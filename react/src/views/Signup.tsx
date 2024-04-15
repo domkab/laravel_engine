@@ -61,9 +61,29 @@ export const Signup: React.FC = () => {
           </div>
           }
           <input ref={nameRef} type="text" placeholder="Full Name" />
-          <input ref={emailRef} type="email" placeholder="Email" />
-          <input ref={passwordRef} type="password" placeholder="Password" />
-          <input ref={passwordConfirmationRef} type="password" placeholder="Password Confirmation" />
+          <input
+            ref={emailRef}
+            name="email"
+            type="email"
+            placeholder="Email"
+            autoComplete="email"
+          />
+          <input
+            ref={passwordRef}
+            name="password"
+            type="password"
+            placeholder="Password"
+            autoComplete="new-password"
+
+          />
+          <input
+            ref={passwordConfirmationRef}
+            name="password_confirmation"
+            type="password"
+            placeholder="Password Confirmation"
+            autoComplete="new-password"
+          />
+
           <button className="btn btn-block">Sign up</button>
 
           <p className="message">
