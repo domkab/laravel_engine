@@ -37,7 +37,6 @@ class UserController extends Controller
     public function store(StoreUserRequest $request)
     {
         $data = $request->validated();
-        // $data['name'] = htmlspecialchars_decode();
         $data['password'] = Hash::make($data['password']);
         $user =  User::create($data);
 

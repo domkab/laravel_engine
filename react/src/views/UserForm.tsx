@@ -22,17 +22,7 @@ export const UserForm: React.FC = () => {
   const [isModified, setIsModified] = useState<boolean>(false);
   const { setNotification } = useStateContext();
 
-  // const validateForEmptyFields = (): boolean => {
-  //   const requiredFields: Array<keyof UserFormState>
-  //     = ['name', 'email', 'password'];
-  //   const newErrors = areInputFieldsEmpty(user, requiredFields);
-
-  //   setErrors(newErrors);
-  //   return Object.keys(newErrors).length === 0;
-  // };
-
   const validateForEmptyFields = (): boolean => {
-    // Only validate fields if it's a new user or fields have been modified
     if (!user.id || isModified) {
       const requiredFields: Array<keyof UserFormState> = ['name', 'email', 'password'];
       const newErrors = areInputFieldsEmpty(user, requiredFields);
@@ -92,8 +82,6 @@ export const UserForm: React.FC = () => {
       axiosClient.get(`/users/${id}`)
         .then(({ data }) => {
           setUser(data);
-
-          console.log(data);
 
           setLoading(false);
         })
@@ -159,7 +147,6 @@ export const UserForm: React.FC = () => {
 
       <Link to="/users" className="">Go back</Link>
     </>
-
   )
 };
 
