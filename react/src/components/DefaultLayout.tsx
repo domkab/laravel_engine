@@ -27,8 +27,6 @@ export const DefaultLayout: React.FC = () => {
       })
   }
 
-  console.log(user?.name);
-
   return (
     <div id="defaultLayout">
       <aside>

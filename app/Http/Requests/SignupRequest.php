@@ -23,16 +23,21 @@ class SignupRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:55',
+            'name' => [
+                'required',
+                'string',
+                'max:55',
+                'regex:/^[A-Za-z\s]+$/u',
+            ],
             'email' => 'required|email|unique:users,email',
             'password' => [
                 'required',
                 'confirmed',
                 'regex:/[a-z]/', // At least one letter
-                // 'min:8', // Minimum of 8 characters
-                // 'regex:/[A-Z]/', // At least one uppercase letter
-                // 'regex:/[0-9]/', // At least one number
-                // 'regex:/[@$!%*#?&]/', // At least one symbol
+                'min:8', // Minimum of 8 characters
+                'regex:/[A-Z]/', // At least one uppercase letter
+                'regex:/[0-9]/', // At least one number
+                'regex:/[@$!%*#?&]/', // At least one symbol
             ],
         ];
     }

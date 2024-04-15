@@ -10,7 +10,6 @@ export const GuestLayout: React.FC = () => {
 
   return (
     <div>
-      For guest users only
       <Outlet />
     </div>
   );
